@@ -20,20 +20,20 @@ random.seed()
 def uri(data):
     ret = {"raw": data}
     parts = split_request_uri(data)
-    ret["scheme"] = parts.scheme or ''
+    ret["scheme"] = parts.scheme or ""
     ret["host"] = parts.netloc.rsplit(":", 1)[0] or None
     ret["port"] = parts.port or 80
-    ret["path"] = parts.path or ''
-    ret["query"] = parts.query or ''
-    ret["fragment"] = parts.fragment or ''
+    ret["path"] = parts.path or ""
+    ret["query"] = parts.query or ""
+    ret["fragment"] = parts.fragment or ""
     return ret
 
 
 def load_py(fname):
-    module_name = '__config__'
+    module_name = "__config__"
     mod = types.ModuleType(module_name)
-    setattr(mod, 'uri', uri)
-    setattr(mod, 'cfg', Config())
+    setattr(mod, "uri", uri)
+    setattr(mod, "cfg", Config())
     loader = importlib.machinery.SourceFileLoader(module_name, fname)
     loader.exec_module(mod)
     return vars(mod)
@@ -48,12 +48,18 @@ class request:
         if not isinstance(self.expect, list):
             self.expect = [self.expect]
 
-        with open(self.fname, 'rb') as handle:
+        with open(self.fname, "rb") as handle:
             self.data = handle.read()
         self.data = self.data.replace(b"\n", b"").replace(b"\\r\\n", b"\r\n")
-        self.data = self.data.replace(b"\\0", b"\000").replace(b"\\n", b"\n").replace(b"\\t", b"\t")
+        self.data = (
+            self.data.replace(b"\\0", b"\000")
+            .replace(b"\\n", b"\n")
+            .replace(b"\\t", b"\t")
+        )
         if b"\\" in self.data:
-            raise AssertionError("Unexpected backslash in test data - only handling HTAB, NUL and CRLF")
+            raise AssertionError(
+                "Unexpected backslash in test data - only handling HTAB, NUL and CRLF"
+            )
 
     # Functions for sending data to the parser.
     # These functions mock out reading from a
@@ -67,8 +73,8 @@ class request:
         lines = self.data
         pos = lines.find(b"\r\n")
         while pos > 0:
-            yield lines[:pos+2]
-            lines = lines[pos+2:]
+            yield lines[: pos + 2]
+            lines = lines[pos + 2 :]
             pos = lines.find(b"\r\n")
         if lines:
             yield lines
@@ -82,7 +88,7 @@ class request:
         read = 0
         while read < len(self.data):
             chunk = random.randint(1, maxs)
-            yield self.data[read:read+chunk]
+            yield self.data[read : read + chunk]
             read += chunk
 
     def send_special_chunks(self):
@@ -100,7 +106,7 @@ class request:
         chunk = self.data[:1]
         read = 0
         while read < len(self.data):
-            yield self.data[read:read+len(chunk)]
+            yield self.data[read : read + len(chunk)]
             read += len(chunk)
             chunk = self.data[read:]
 
@@ -134,10 +140,11 @@ class request:
         data = self.szread(req.body.read, sizes)
         count = 1000
         while body:
-            if body[:len(data)] != data:
-                raise AssertionError("Invalid body data read: %r != %r" % (
-                                        data, body[:len(data)]))
-            body = body[len(data):]
+            if body[: len(data)] != data:
+                raise AssertionError(
+                    "Invalid body data read: %r != %r" % (data, body[: len(data)])
+                )
+            body = body[len(data) :]
             data = self.szread(req.body.read, sizes)
             if not data:
                 count -= 1
@@ -156,11 +163,11 @@ class request:
         data = self.szread(req.body.readline, sizes)
         count = 1000
         while body:
-            if body[:len(data)] != data:
+            if body[: len(data)] != data:
                 raise AssertionError("Invalid data read: %r" % data)
-            if b'\n' in data[:-1]:
+            if b"\n" in data[:-1]:
                 raise AssertionError("Embedded new line: %r" % data)
-            body = body[len(data):]
+            body = body[len(data) :]
             data = self.szread(req.body.readline, sizes)
             if not data:
                 count -= 1
@@ -180,12 +187,13 @@ class request:
         """
         data = req.body.readlines()
         for line in data:
-            if b'\n' in line[:-1]:
+            if b"\n" in line[:-1]:
                 raise AssertionError("Embedded new line: %r" % line)
-            if line != body[:len(line)]:
-                raise AssertionError("Invalid body data read: %r != %r" % (
-                                                    line, body[:len(line)]))
-            body = body[len(line):]
+            if line != body[: len(line)]:
+                raise AssertionError(
+                    "Invalid body data read: %r != %r" % (line, body[: len(line)])
+                )
+            body = body[len(line) :]
         if body:
             raise AssertionError("Failed to read entire body: %r" % body)
         data = req.body.readlines(sizes())
@@ -197,12 +205,13 @@ class request:
         This skips sizes because there's its not part of the iter api.
         """
         for line in req.body:
-            if b'\n' in line[:-1]:
+            if b"\n" in line[:-1]:
                 raise AssertionError("Embedded new line: %r" % line)
-            if line != body[:len(line)]:
-                raise AssertionError("Invalid body data read: %r != %r" % (
-                                                    line, body[:len(line)]))
-            body = body[len(line):]
+            if line != body[: len(line)]:
+                raise AssertionError(
+                    "Invalid body data read: %r != %r" % (line, body[: len(line)])
+                )
+            body = body[len(line) :]
         if body:
             raise AssertionError("Failed to read entire body: %r" % body)
         try:
@@ -217,19 +226,15 @@ class request:
     def gen_cases(self, cfg):
         def get_funs(p):
             return [v for k, v in inspect.getmembers(self) if k.startswith(p)]
+
         senders = get_funs("send_")
         sizers = get_funs("size_")
         matchers = get_funs("match_")
-        cfgs = [
-            (mt, sz, sn)
-            for mt in matchers
-            for sz in sizers
-            for sn in senders
-        ]
+        cfgs = [(mt, sz, sn) for mt in matchers for sz in sizers for sn in senders]
 
         ret = []
         for (mt, sz, sn) in cfgs:
-            if hasattr(mt, 'funcname'):
+            if hasattr(mt, "funcname"):
                 mtn = mt.func_name[6:]
                 szn = sz.func_name[5:]
                 snn = sn.func_name[5:]
@@ -240,6 +245,7 @@ class request:
 
             def test_req(sn, sz, mt):
                 self.check(cfg, sn, sz, mt)
+
             desc = "%s: MT: %s SZ: %s SN: %s" % (self.name, mtn, szn, snn)
             test_req.description = desc
             ret.append((test_req, sn, sz, mt))
@@ -275,17 +281,21 @@ class badrequest:
         with open(self.fname) as handle:
             self.data = handle.read()
         self.data = self.data.replace("\n", "").replace("\\r\\n", "\r\n")
-        self.data = self.data.replace("\\0", "\000").replace("\\n", "\n").replace("\\t", "\t")
+        self.data = (
+            self.data.replace("\\0", "\000").replace("\\n", "\n").replace("\\t", "\t")
+        )
         if "\\" in self.data:
-            raise AssertionError("Unexpected backslash in test data - only handling HTAB, NUL and CRLF")
-        self.data = self.data.encode('latin1')
+            raise AssertionError(
+                "Unexpected backslash in test data - only handling HTAB, NUL and CRLF"
+            )
+        self.data = self.data.encode("latin1")
 
     def send(self):
         maxs = round(len(self.data) / 10)
         read = 0
         while read < len(self.data):
             chunk = random.randint(1, maxs)
-            yield self.data[read:read+chunk]
+            yield self.data[read : read + chunk]
             read += chunk
 
     def check(self, cfg):

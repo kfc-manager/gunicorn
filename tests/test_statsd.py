@@ -17,6 +17,7 @@ class StatsdTestException(Exception):
 
 class MockSocket:
     "Pretend to be a UDP socket"
+
     def __init__(self, failp):
         self.failp = failp
         self.msgs = []  # accumulate messages for later inspection
@@ -61,25 +62,26 @@ def test_statsd_fail():
 
 def test_statsd_host_initialization():
     c = Config()
-    c.set('statsd_host', 'unix:test.sock')
+    c.set("statsd_host", "unix:test.sock")
     logger = Statsd(c)
     logger.info("Can be initialized and used with a UDS socket")
 
     # Can be initialized and used with a UDP address
-    c.set('statsd_host', 'host:8080')
+    c.set("statsd_host", "host:8080")
     logger = Statsd(c)
     logger.info("Can be initialized and used with a UDP socket")
 
 
 def test_dogstatsd_tags():
     c = Config()
-    tags = 'yucatan,libertine:rhubarb'
-    c.set('dogstatsd_tags', tags)
+    tags = "yucatan,libertine:rhubarb"
+    c.set("dogstatsd_tags", tags)
     logger = Statsd(c)
     logger.sock = MockSocket(False)
-    logger.info("Twill", extra={"mtype": "gauge", "metric": "barb.westerly",
-                                "value": 2})
-    assert logger.sock.msgs[0] == b"barb.westerly:2|g|#" + tags.encode('ascii')
+    logger.info(
+        "Twill", extra={"mtype": "gauge", "metric": "barb.westerly", "value": 2}
+    )
+    assert logger.sock.msgs[0] == b"barb.westerly:2|g|#" + tags.encode("ascii")
 
 
 def test_instrument():
@@ -90,7 +92,9 @@ def test_instrument():
     logger.sock = MockSocket(False)
 
     # Regular message
-    logger.info("Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666})
+    logger.info(
+        "Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666}
+    )
     assert logger.sock.msgs[0] == b"gunicorn.test:666|g"
     assert sio.getvalue() == "Blah\n"
     logger.sock.reset()
@@ -123,7 +127,9 @@ def test_prefix():
     logger = Statsd(c)
     logger.sock = MockSocket(False)
 
-    logger.info("Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666})
+    logger.info(
+        "Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666}
+    )
     assert logger.sock.msgs[0] == b"test.gunicorn.test:666|g"
 
 
@@ -133,7 +139,9 @@ def test_prefix_no_dot():
     logger = Statsd(c)
     logger.sock = MockSocket(False)
 
-    logger.info("Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666})
+    logger.info(
+        "Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666}
+    )
     assert logger.sock.msgs[0] == b"test.gunicorn.test:666|g"
 
 
@@ -143,7 +151,9 @@ def test_prefix_multiple_dots():
     logger = Statsd(c)
     logger.sock = MockSocket(False)
 
-    logger.info("Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666})
+    logger.info(
+        "Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666}
+    )
     assert logger.sock.msgs[0] == b"test.gunicorn.test:666|g"
 
 
@@ -153,5 +163,7 @@ def test_prefix_nested():
     logger = Statsd(c)
     logger.sock = MockSocket(False)
 
-    logger.info("Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666})
+    logger.info(
+        "Blah", extra={"mtype": "gauge", "metric": "gunicorn.test", "value": 666}
+    )
     assert logger.sock.msgs[0] == b"test.asdf.gunicorn.test:666|g"

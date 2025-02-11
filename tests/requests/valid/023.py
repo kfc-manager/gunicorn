@@ -2,10 +2,8 @@ req1 = {
     "method": "POST",
     "uri": uri("/two_chunks_mult_zero_end"),
     "version": (1, 1),
-    "headers": [
-        ("TRANSFER-ENCODING", "chunked")
-    ],
-    "body": b"hello world"
+    "headers": [("TRANSFER-ENCODING", "chunked")],
+    "body": b"hello world",
 }
 
 req2 = {
@@ -13,7 +11,7 @@ req2 = {
     "uri": uri("/second"),
     "version": (1, 1),
     "headers": [],
-    "body": b""
+    "body": b"",
 }
 
 request = [req1, req2]

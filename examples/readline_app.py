@@ -15,22 +15,21 @@
 #     $ curl -XPOST -d'test\r\ntest2\r\n' -H"Transfer-Encoding: Chunked" http://localhost:8000
 
 
-
 from gunicorn import __version__
 
 
 def app(environ, start_response):
     """Simplest possible application object"""
-    status = '200 OK'
+    status = "200 OK"
 
     response_headers = [
-        ('Content-type', 'text/plain'),
-        ('Transfer-Encoding', "chunked"),
-        ('X-Gunicorn-Version', __version__)
+        ("Content-type", "text/plain"),
+        ("Transfer-Encoding", "chunked"),
+        ("X-Gunicorn-Version", __version__),
     ]
     start_response(status, response_headers)
 
-    body = environ['wsgi.input']
+    body = environ["wsgi.input"]
 
     lines = []
     while True:

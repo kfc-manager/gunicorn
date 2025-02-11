@@ -27,14 +27,14 @@ from test import app as app2
 class Application:
     def __init__(self):
         self.map = Mapper()
-        self.map.connect('app1', '/app1url', app=app1)
-        self.map.connect('app2', '/app2url', app=app2)
+        self.map.connect("app1", "/app1url", app=app1)
+        self.map.connect("app2", "/app2url", app=app2)
 
     def __call__(self, environ, start_response):
         match = self.map.routematch(environ=environ)
         if not match:
             return self.error404(environ, start_response)
-        return match[0]['app'](environ, start_response)
+        return match[0]["app"](environ, start_response)
 
     def error404(self, environ, start_response):
         html = b"""\
@@ -47,11 +47,9 @@ class Application:
           </body>
         </html>
         """
-        headers = [
-            ('Content-Type', 'text/html'),
-            ('Content-Length', str(len(html)))
-        ]
-        start_response('404 Not Found', headers)
+        headers = [("Content-Type", "text/html"), ("Content-Length", str(len(html)))]
+        start_response("404 Not Found", headers)
         return [html]
+
 
 app = Application()

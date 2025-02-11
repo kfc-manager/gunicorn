@@ -6,14 +6,14 @@ Use this config file in your script like this:
 
 settings_dict = {}
 
-with open('frameworks/django/testing/testing/settings.py') as f:
+with open("frameworks/django/testing/testing/settings.py") as f:
     exec(f.read(), settings_dict)
 
-loglevel = 'warning'
-proc_name = 'web-project'
+loglevel = "warning"
+proc_name = "web-project"
 workers = 1
 
-if settings_dict['DEBUG']:
-    loglevel = 'debug'
+if settings_dict["DEBUG"]:
+    loglevel = "debug"
     reload = True
-    proc_name += '_debug'
+    proc_name += "_debug"

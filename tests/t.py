@@ -17,7 +17,7 @@ def data_source(fname):
     with open(fname) as handle:
         for line in handle:
             line = line.rstrip("\n").replace("\\r\\n", "\r\n")
-            buf.write(line.encode('latin1'))
+            buf.write(line.encode("latin1"))
         return buf
 
 
@@ -29,12 +29,12 @@ class request:
         def run():
             src = data_source(self.fname)
             func(src, RequestParser(src, None, None))
+
         run.func_name = func.func_name
         return run
 
 
 class FakeSocket:
-
     def __init__(self, data):
         self.tmp = tempfile.TemporaryFile()
         if data:

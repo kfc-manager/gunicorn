@@ -4,11 +4,10 @@ from flask import Flask, send_file
 
 app = Flask(__name__)
 
-@app.route('/')
+
+@app.route("/")
 def index():
     buf = io.BytesIO()
-    buf.write(b'hello world')
+    buf.write(b"hello world")
     buf.seek(0)
-    return send_file(buf,
-                     attachment_filename="testing.txt",
-                     as_attachment=True)
+    return send_file(buf, attachment_filename="testing.txt", as_attachment=True)

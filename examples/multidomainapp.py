@@ -4,9 +4,10 @@
 
 import re
 
+
 class SubDomainApp:
-    """WSGI application to delegate requests based on domain name.
-"""
+    """WSGI application to delegate requests based on domain name."""
+
     def __init__(self, mapping):
         self.mapping = mapping
 
@@ -21,15 +22,15 @@ class SubDomainApp:
             start_response("404 Not Found", [])
             return [b""]
 
+
 def hello(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/plain")])
     return [b"Hello, world\n"]
+
 
 def bye(environ, start_response):
     start_response("200 OK", [("Content-Type", "text/plain")])
     return [b"Goodbye!\n"]
 
-app = SubDomainApp([
-    ("localhost", hello),
-    (".*", bye)
-])
+
+app = SubDomainApp([("localhost", hello), (".*", bye)])

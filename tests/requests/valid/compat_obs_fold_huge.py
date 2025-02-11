@@ -1,7 +1,7 @@
 from gunicorn.config import Config
 
 cfg = Config()
-cfg.set('permit_obsolete_folding', True)
+cfg.set("permit_obsolete_folding", True)
 
 certificate = """-----BEGIN CERTIFICATE-----
  MIIFbTCCBFWgAwIBAgICH4cwDQYJKoZIhvcNAQEFBQAwcDELMAkGA1UEBhMCVUsx
@@ -34,12 +34,14 @@ certificate = """-----BEGIN CERTIFICATE-----
  wTC6o2xq5y0qZ03JonF7OJspEd3I5zKY3E+ov7/ZhW6DqT8UFvsAdjvQbXyhV8Eu
  Yhixw1aKEPzNjNowuIseVogKOLXxWI5vAi5HgXdS0/ES5gDGsABo4fqovUKlgop3
  RA==
- -----END CERTIFICATE-----""".replace("\n", "")
+ -----END CERTIFICATE-----""".replace(
+    "\n", ""
+)
 
 request = {
     "method": "GET",
     "uri": uri("/"),
     "version": (1, 1),
     "headers": [("X-SSL-CERT", certificate)],
-    "body": b""
+    "body": b"",
 }

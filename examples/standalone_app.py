@@ -17,11 +17,11 @@ def number_of_workers():
 
 
 def handler_app(environ, start_response):
-    response_body = b'Works fine'
-    status = '200 OK'
+    response_body = b"Works fine"
+    status = "200 OK"
 
     response_headers = [
-        ('Content-Type', 'text/plain'),
+        ("Content-Type", "text/plain"),
     ]
 
     start_response(status, response_headers)
@@ -30,15 +30,17 @@ def handler_app(environ, start_response):
 
 
 class StandaloneApplication(gunicorn.app.base.BaseApplication):
-
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
         super().__init__()
 
     def load_config(self):
-        config = {key: value for key, value in self.options.items()
-                  if key in self.cfg.settings and value is not None}
+        config = {
+            key: value
+            for key, value in self.options.items()
+            if key in self.cfg.settings and value is not None
+        }
         for key, value in config.items():
             self.cfg.set(key.lower(), value)
 
@@ -46,9 +48,9 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
         return self.application
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     options = {
-        'bind': '%s:%s' % ('127.0.0.1', '8080'),
-        'workers': number_of_workers(),
+        "bind": "%s:%s" % ("127.0.0.1", "8080"),
+        "workers": number_of_workers(),
     }
     StandaloneApplication(handler_app, options).run()

@@ -29,8 +29,8 @@ for reference on setting at the command line.
     .. versionadded:: 19.7
 
 """
-ISSUE_URI = 'https://github.com/benoitc/gunicorn/issues/%s'
-PULL_REQUEST_URI = 'https://github.com/benoitc/gunicorn/pull/%s'
+ISSUE_URI = "https://github.com/benoitc/gunicorn/issues/%s"
+PULL_REQUEST_URI = "https://github.com/benoitc/gunicorn/pull/%s"
 
 
 def format_settings(app):
@@ -42,9 +42,9 @@ def format_settings(app):
             ret.append("%s\n%s\n\n" % (s.section, "-" * len(s.section)))
         ret.append(fmt_setting(s))
 
-    with open(settings_file, 'w') as settings:
+    with open(settings_file, "w") as settings:
         settings.write(HEAD)
-        settings.write(''.join(ret))
+        settings.write("".join(ret))
 
 
 def fmt_setting(s):
@@ -54,7 +54,7 @@ def fmt_setting(s):
         val = inspect.getsource(s.default)
         val = "\n".join("    %s" % line for line in val.splitlines())
         val = "\n\n.. code-block:: python\n\n" + val
-    elif s.default == '':
+    elif s.default == "":
         val = "``''``"
     else:
         val = "``%r``" % s.default
@@ -84,19 +84,19 @@ def fmt_setting(s):
 
 def issue_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     issue = utils.unescape(text)
-    text = 'issue ' + issue
+    text = "issue " + issue
     refnode = nodes.reference(text, text, refuri=ISSUE_URI % issue)
     return [refnode], []
 
 
 def pull_request_role(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     issue = utils.unescape(text)
-    text = 'pull request ' + issue
+    text = "pull request " + issue
     refnode = nodes.reference(text, text, refuri=PULL_REQUEST_URI % issue)
     return [refnode], []
 
 
 def setup(app):
-    app.connect('builder-inited', format_settings)
-    app.add_role('issue', issue_role)
-    app.add_role('pr', pull_request_role)
+    app.connect("builder-inited", format_settings)
+    app.add_role("issue", issue_role)
+    app.add_role("pr", pull_request_role)

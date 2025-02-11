@@ -10,17 +10,17 @@ from gunicorn import __version__
 def app(environ, start_response):
     """Simplest possible application object"""
 
-    if environ['REQUEST_METHOD'].upper() != 'POST':
-        data = b'Hello, World!\n'
+    if environ["REQUEST_METHOD"].upper() != "POST":
+        data = b"Hello, World!\n"
     else:
-        data = environ['wsgi.input'].read()
+        data = environ["wsgi.input"].read()
 
-    status = '200 OK'
+    status = "200 OK"
 
     response_headers = [
-        ('Content-type', 'text/plain'),
-        ('Content-Length', str(len(data))),
-        ('X-Gunicorn-Version', __version__)
+        ("Content-type", "text/plain"),
+        ("Content-Length", str(len(data))),
+        ("X-Gunicorn-Version", __version__),
     ]
     start_response(status, response_headers)
     return iter([data])

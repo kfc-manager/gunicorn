@@ -4,8 +4,9 @@ import cherrypy
 class Root:
     @cherrypy.expose
     def index(self):
-        return 'Hello World!'
+        return "Hello World!"
 
-cherrypy.config.update({'environment': 'embedded'})
+
+cherrypy.config.update({"environment": "embedded"})
 
 app = cherrypy.tree.mount(Root())

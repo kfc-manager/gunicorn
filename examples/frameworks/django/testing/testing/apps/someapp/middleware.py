@@ -5,7 +5,7 @@ import requests
 def child_process(queue):
     while True:
         print(queue.get())
-        requests.get('http://requestb.in/15s95oz1')
+        requests.get("http://requestb.in/15s95oz1")
 
 
 class GunicornSubProcessTestMiddleware:
@@ -16,8 +16,8 @@ class GunicornSubProcessTestMiddleware:
         self.process.start()
 
     def process_request(self, request):
-        self.queue.put(('REQUEST',))
+        self.queue.put(("REQUEST",))
 
     def process_response(self, request, response):
-        self.queue.put(('RESPONSE', response.status_code))
+        self.queue.put(("RESPONSE", response.status_code))
         return response

@@ -11,14 +11,14 @@ class ReloadApp(Application):
 
     def do_load_config(self):
         self.load_default_config()
-        self.cfg.set('reload', True)
-        self.cfg.set('reload_engine', 'poll')
+        self.cfg.set("reload", True)
+        self.cfg.set("reload_engine", "poll")
 
 
 class SyntaxErrorApp(ReloadApp):
     def wsgi(self):
-        error = SyntaxError('invalid syntax')
-        error.filename = 'syntax_error_filename'
+        error = SyntaxError("invalid syntax")
+        error.filename = "syntax_error_filename"
         raise error
 
 
@@ -32,7 +32,7 @@ def test_reload_on_syntax_error():
     Test that reloading works if the application has a syntax error.
     """
     reloader = mock.Mock()
-    reloader_engines['poll'] = lambda *args, **kw: reloader
+    reloader_engines["poll"] = lambda *args, **kw: reloader
 
     app = SyntaxErrorApp()
     cfg = app.cfg
@@ -41,7 +41,7 @@ def test_reload_on_syntax_error():
 
     worker.init_process()
     reloader.start.assert_called_with()
-    reloader.add_extra_file.assert_called_with('syntax_error_filename')
+    reloader.add_extra_file.assert_called_with("syntax_error_filename")
 
 
 def test_start_reloader_after_load_wsgi():
@@ -49,7 +49,7 @@ def test_start_reloader_after_load_wsgi():
     Check that the reloader is started after the wsgi app has been loaded.
     """
     reloader = mock.Mock()
-    reloader_engines['poll'] = lambda *args, **kw: reloader
+    reloader_engines["poll"] = lambda *args, **kw: reloader
 
     app = ReloadApp()
     cfg = app.cfg
@@ -58,11 +58,13 @@ def test_start_reloader_after_load_wsgi():
 
     worker.load_wsgi = mock.Mock()
     mock_parent = mock.Mock()
-    mock_parent.attach_mock(worker.load_wsgi, 'load_wsgi')
-    mock_parent.attach_mock(reloader.start, 'reloader_start')
+    mock_parent.attach_mock(worker.load_wsgi, "load_wsgi")
+    mock_parent.attach_mock(reloader.start, "reloader_start")
 
     worker.init_process()
-    mock_parent.assert_has_calls([
-        mock.call.load_wsgi(),
-        mock.call.reloader_start(),
-    ])
+    mock_parent.assert_has_calls(
+        [
+            mock.call.load_wsgi(),
+            mock.call.reloader_start(),
+        ]
+    )

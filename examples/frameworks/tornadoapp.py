@@ -11,6 +11,7 @@ import tornado.ioloop
 import tornado.web
 from tornado import gen
 
+
 class MainHandler(tornado.web.RequestHandler):
     @gen.coroutine
     def get(self):
@@ -18,10 +19,14 @@ class MainHandler(tornado.web.RequestHandler):
         yield gen.sleep(1)  # Example of an asynchronous operation
         self.write("Hello, World!")
 
+
 def make_app():
-    return tornado.web.Application([
-        (r"/", MainHandler),
-    ])
+    return tornado.web.Application(
+        [
+            (r"/", MainHandler),
+        ]
+    )
+
 
 if __name__ == "__main__":
     app = make_app()

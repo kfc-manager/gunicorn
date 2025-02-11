@@ -36,5 +36,5 @@ for author in map(str.strip, lines):
                 bad_addresses.add(email_address)
 
 
-with open('result.txt', 'w') as output:
-    output.write('\n'.join(collection))
+with open("result.txt", "w") as output:
+    output.write("\n".join(collection))

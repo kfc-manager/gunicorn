@@ -13,14 +13,14 @@ from gunicorn import __version__
 def app(environ, start_response):
     """Simplest possible application object"""
 
-    data = b'Hello, World!\n'
-    status = '200 OK'
+    data = b"Hello, World!\n"
+    status = "200 OK"
 
     response_headers = [
-        ('Content-type', 'text/plain'),
-        ('Content-Length', str(len(data))),
-        ('X-Gunicorn-Version', __version__),
-        ('Foo', 'B\u00e5r'),  # Foo: Bår
+        ("Content-type", "text/plain"),
+        ("Content-Length", str(len(data))),
+        ("X-Gunicorn-Version", __version__),
+        ("Foo", "B\u00e5r"),  # Foo: Bår
     ]
     start_response(status, response_headers)
     return iter([data])

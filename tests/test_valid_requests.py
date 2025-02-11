@@ -18,8 +18,8 @@ httpfiles = glob.glob(os.path.join(reqdir, "*.http"))
 def test_http_parser(fname):
     env = treq.load_py(os.path.splitext(fname)[0] + ".py")
 
-    expect = env['request']
-    cfg = env['cfg']
+    expect = env["request"]
+    cfg = env["cfg"]
     req = treq.request(fname, expect)
 
     for case in req.gen_cases(cfg):

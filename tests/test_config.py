@@ -18,18 +18,32 @@ from gunicorn import glogging
 from gunicorn.instrument import statsd
 
 dirname = os.path.dirname(__file__)
+
+
 def cfg_module():
-    return 'config.test_cfg'
+    return "config.test_cfg"
+
+
 def alt_cfg_module():
-    return 'config.test_cfg_alt'
+    return "config.test_cfg_alt"
+
+
 def cfg_file():
     return os.path.join(dirname, "config", "test_cfg.py")
+
+
 def alt_cfg_file():
     return os.path.join(dirname, "config", "test_cfg_alt.py")
+
+
 def cfg_file_with_wsgi_app():
     return os.path.join(dirname, "config", "test_cfg_with_wsgi_app.py")
+
+
 def paster_ini():
-    return os.path.join(dirname, "..", "examples", "frameworks", "pylonstest", "nose.ini")
+    return os.path.join(
+        dirname, "..", "examples", "frameworks", "pylonstest", "nose.ini"
+    )
 
 
 class AltArgs:
@@ -117,6 +131,7 @@ def test_property_access():
     class Baz:
         def get(self):
             return 3.14
+
     c.settings["foo"] = Baz()
     assert c.foo == 3.14
 
@@ -194,8 +209,10 @@ def test_str_to_list():
 
 def test_callable_validation():
     c = config.Config()
+
     def func(a, b):
         pass
+
     c.set("pre_fork", func)
     assert c.pre_fork == func
     pytest.raises(TypeError, c.set, "pre_fork", 1)
@@ -207,29 +224,21 @@ def test_reload_engine_validation():
 
     assert c.reload_engine == "auto"
 
-    c.set('reload_engine', 'poll')
-    assert c.reload_engine == 'poll'
+    c.set("reload_engine", "poll")
+    assert c.reload_engine == "poll"
 
     pytest.raises(ConfigError, c.set, "reload_engine", "invalid")
 
 
 def test_callable_validation_for_string():
     from os.path import isdir as testfunc
+
     assert config.validate_callable(-1)("os.path.isdir") == testfunc
 
     # invalid values tests
-    pytest.raises(
-        TypeError,
-        config.validate_callable(-1), ""
-    )
-    pytest.raises(
-        TypeError,
-        config.validate_callable(-1), "os.path.not_found_func"
-    )
-    pytest.raises(
-        TypeError,
-        config.validate_callable(-1), "notfoundmodule.func"
-    )
+    pytest.raises(TypeError, config.validate_callable(-1), "")
+    pytest.raises(TypeError, config.validate_callable(-1), "os.path.not_found_func")
+    pytest.raises(TypeError, config.validate_callable(-1), "notfoundmodule.func")
 
 
 def test_cmd_line():
@@ -249,14 +258,17 @@ def test_cmd_line_invalid_setting(capsys):
         with pytest.raises(SystemExit):
             NoConfigApp()
         _, err = capsys.readouterr()
-        assert  "error: unrecognized arguments: -q" in err
+        assert "error: unrecognized arguments: -q" in err
 
 
 def test_app_config():
     with AltArgs():
         app = NoConfigApp()
     for s in config.KNOWN_SETTINGS:
-        assert app.cfg.settings[s.name].validator(s.default) == app.cfg.settings[s.name].get()
+        assert (
+            app.cfg.settings[s.name].validator(s.default)
+            == app.cfg.settings[s.name].get()
+        )
 
 
 def test_load_config():
@@ -299,13 +311,13 @@ def test_cli_overrides_config_module():
 
 @pytest.fixture
 def create_config_file(request):
-    default_config = os.path.join(os.path.abspath(os.getcwd()),
-                                                      'gunicorn.conf.py')
-    with open(default_config, 'w+') as default:
+    default_config = os.path.join(os.path.abspath(os.getcwd()), "gunicorn.conf.py")
+    with open(default_config, "w+") as default:
         default.write("bind='0.0.0.0:9090'")
 
     def fin():
         os.unlink(default_config)
+
     request.addfinalizer(fin)
 
     return default
@@ -378,7 +390,7 @@ def test_statsd_host_with_unix_as_hostname():
 def test_statsd_changes_logger():
     c = config.Config()
     assert c.logger_class == glogging.Logger
-    c.set('statsd_host', 'localhost:12345')
+    c.set("statsd_host", "localhost:12345")
     assert c.logger_class == statsd.Statsd
 
 
@@ -389,9 +401,9 @@ class MyLogger(glogging.Logger):
 
 def test_always_use_configured_logger():
     c = config.Config()
-    c.set('logger_class', __name__ + '.MyLogger')
+    c.set("logger_class", __name__ + ".MyLogger")
     assert c.logger_class == MyLogger
-    c.set('statsd_host', 'localhost:12345')
+    c.set("statsd_host", "localhost:12345")
     # still uses custom logger over statsd
     assert c.logger_class == MyLogger
 
@@ -401,6 +413,7 @@ def test_load_enviroment_variables_config(monkeypatch):
     with AltArgs():
         app = NoConfigApp()
     assert app.cfg.workers == 4
+
 
 def test_config_file_environment_variable(monkeypatch):
     monkeypatch.setenv("GUNICORN_CMD_ARGS", "--config=" + alt_cfg_file())
@@ -413,13 +426,14 @@ def test_config_file_environment_variable(monkeypatch):
     assert app.cfg.proc_name == "fooey"
     assert app.cfg.config == cfg_file()
 
+
 def test_invalid_enviroment_variables_config(monkeypatch, capsys):
     monkeypatch.setenv("GUNICORN_CMD_ARGS", "--foo=bar")
     with AltArgs():
         with pytest.raises(SystemExit):
             NoConfigApp()
         _, err = capsys.readouterr()
-        assert  "error: unrecognized arguments: --foo" in err
+        assert "error: unrecognized arguments: --foo" in err
 
 
 def test_cli_overrides_enviroment_variables_module(monkeypatch):
@@ -429,12 +443,15 @@ def test_cli_overrides_enviroment_variables_module(monkeypatch):
     assert app.cfg.workers == 3
 
 
-@pytest.mark.parametrize("options, expected", [
-    (["app:app"], 'app:app'),
-    (["-c", cfg_file(), "app:app"], 'app:app'),
-    (["-c", cfg_file_with_wsgi_app(), "app:app"], 'app:app'),
-    (["-c", cfg_file_with_wsgi_app()], 'app1:app1'),
-])
+@pytest.mark.parametrize(
+    "options, expected",
+    [
+        (["app:app"], "app:app"),
+        (["-c", cfg_file(), "app:app"], "app:app"),
+        (["-c", cfg_file_with_wsgi_app(), "app:app"], "app:app"),
+        (["-c", cfg_file_with_wsgi_app()], "app1:app1"),
+    ],
+)
 def test_wsgi_app_config(options, expected):
     cmdline = ["prog_name"]
     cmdline.extend(options)
@@ -443,10 +460,13 @@ def test_wsgi_app_config(options, expected):
     assert app.app_uri == expected
 
 
-@pytest.mark.parametrize("options", [
-    ([]),
-    (["-c", cfg_file()]),
-])
+@pytest.mark.parametrize(
+    "options",
+    [
+        ([]),
+        (["-c", cfg_file()]),
+    ],
+)
 def test_non_wsgi_app(options, capsys):
     cmdline = ["prog_name"]
     cmdline.extend(options)
@@ -454,15 +474,18 @@ def test_non_wsgi_app(options, capsys):
         with pytest.raises(SystemExit):
             WSGIApp()
         _, err = capsys.readouterr()
-        assert  "Error: No application module specified." in err
+        assert "Error: No application module specified." in err
 
 
-@pytest.mark.parametrize("options, expected", [
-    (["myapp:app"], False),
-    (["--reload", "myapp:app"], True),
-    (["--reload", "--", "myapp:app"], True),
-    (["--reload", "-w 2", "myapp:app"], True),
-])
+@pytest.mark.parametrize(
+    "options, expected",
+    [
+        (["myapp:app"], False),
+        (["--reload", "myapp:app"], True),
+        (["--reload", "--", "myapp:app"], True),
+        (["--reload", "-w 2", "myapp:app"], True),
+    ],
+)
 def test_reload(options, expected):
     cmdline = ["prog_name"]
     cmdline.extend(options)
@@ -471,13 +494,16 @@ def test_reload(options, expected):
     assert app.cfg.reload == expected
 
 
-@pytest.mark.parametrize("options, expected", [
-    (["--umask", "0", "myapp:app"], 0),
-    (["--umask", "0o0", "myapp:app"], 0),
-    (["--umask", "0x0", "myapp:app"], 0),
-    (["--umask", "0xFF", "myapp:app"], 255),
-    (["--umask", "0022", "myapp:app"], 18),
-])
+@pytest.mark.parametrize(
+    "options, expected",
+    [
+        (["--umask", "0", "myapp:app"], 0),
+        (["--umask", "0o0", "myapp:app"], 0),
+        (["--umask", "0x0", "myapp:app"], 0),
+        (["--umask", "0xFF", "myapp:app"], 255),
+        (["--umask", "0022", "myapp:app"], 18),
+    ],
+)
 def test_umask_config(options, expected):
     cmdline = ["prog_name"]
     cmdline.extend(options)
@@ -504,7 +530,7 @@ def test_repr():
     c = config.Config()
     c.set("workers", 5)
 
-    assert "with value 5" in repr(c.settings['workers'])
+    assert "with value 5" in repr(c.settings["workers"])
 
 
 def test_str():
@@ -514,15 +540,15 @@ def test_str():
     # match the first few lines, some different types, but don't go OTT
     # to avoid needless test fails with changes
     OUTPUT_MATCH = {
-        'access_log_format': '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"',
-        'accesslog': 'None',
-        'backlog': '2048',
-        'bind': "['127.0.0.1:8000']",
-        'capture_output': 'False',
-        'child_exit': '<ChildExit.child_exit()>',
+        "access_log_format": '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"',
+        "accesslog": "None",
+        "backlog": "2048",
+        "bind": "['127.0.0.1:8000']",
+        "capture_output": "False",
+        "child_exit": "<ChildExit.child_exit()>",
     }
     for i, line in enumerate(o.splitlines()):
-        m = re.match(r'^(\w+)\s+= ', line)
+        m = re.match(r"^(\w+)\s+= ", line)
         assert m, "Line {} didn't match expected format: {!r}".format(i, line)
 
         key = m.group(1)
@@ -531,12 +557,10 @@ def test_str():
         except KeyError:
             continue
 
-        line_re = r'^{}\s+= {}$'.format(key, re.escape(s))
-        assert re.match(line_re, line), '{!r} != {!r}'.format(line_re, line)
+        line_re = r"^{}\s+= {}$".format(key, re.escape(s))
+        assert re.match(line_re, line), "{!r} != {!r}".format(line_re, line)
 
         if not OUTPUT_MATCH:
             break
     else:
-        assert False, 'missing expected setting lines? {}'.format(
-            OUTPUT_MATCH.keys()
-        )
+        assert False, "missing expected setting lines? {}".format(OUTPUT_MATCH.keys())

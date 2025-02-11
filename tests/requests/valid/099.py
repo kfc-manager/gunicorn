@@ -4,13 +4,22 @@ request = {
     "version": (1, 1),
     "headers": [
         ("HOST", "0.0.0.0:5000"),
-        ("USER-AGENT", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0"),
+        (
+            "USER-AGENT",
+            "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
+        ),
         ("ACCEPT", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
         ("ACCEPT-LANGUAGE", "en-us,en;q=0.7,el;q=0.3"),
         ("ACCEPT-ENCODING", "gzip, deflate"),
-        ("COOKIE", "csrftoken=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX; sessionid=YYYYYYYYYYYYYYYYYYYYYYYYYYYY"),
+        (
+            "COOKIE",
+            "csrftoken=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX; sessionid=YYYYYYYYYYYYYYYYYYYYYYYYYYYY",
+        ),
         ("CONNECTION", "keep-alive"),
-        ("CONTENT-TYPE", "multipart/form-data; boundary=---------------------------320761477111544"),
+        (
+            "CONTENT-TYPE",
+            "multipart/form-data; boundary=---------------------------320761477111544",
+        ),
         ("CONTENT-LENGTH", "17914"),
     ],
     "body": b"""-----------------------------320761477111544
@@ -270,5 +279,9 @@ Content-Disposition: form-data; name="foobar_manager_record_domain-8-INITIAL_FOR
 
 0
 ---------------------
-""".decode('utf-8').replace('\n', '\r\n').encode('utf-8'),
+""".decode(
+        "utf-8"
+    )
+    .replace("\n", "\r\n")
+    .encode("utf-8"),
 }

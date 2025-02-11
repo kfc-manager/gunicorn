@@ -21,40 +21,38 @@ def check_environ(unset=True):
     """
 
     with mock.patch.dict(os.environ):
-        old_fds = os.environ.get('LISTEN_FDS', None)
-        old_pid = os.environ.get('LISTEN_PID', None)
+        old_fds = os.environ.get("LISTEN_FDS", None)
+        old_pid = os.environ.get("LISTEN_PID", None)
 
         yield
 
         if unset:
-            assert 'LISTEN_FDS' not in os.environ, \
-                "LISTEN_FDS should have been unset"
-            assert 'LISTEN_PID' not in os.environ, \
-                "LISTEN_PID should have been unset"
+            assert "LISTEN_FDS" not in os.environ, "LISTEN_FDS should have been unset"
+            assert "LISTEN_PID" not in os.environ, "LISTEN_PID should have been unset"
         else:
-            new_fds = os.environ.get('LISTEN_FDS', None)
-            new_pid = os.environ.get('LISTEN_PID', None)
-            assert new_fds == old_fds, \
-                "LISTEN_FDS should not have been changed"
-            assert new_pid == old_pid, \
-                "LISTEN_PID should not have been changed"
+            new_fds = os.environ.get("LISTEN_FDS", None)
+            new_pid = os.environ.get("LISTEN_PID", None)
+            assert new_fds == old_fds, "LISTEN_FDS should not have been changed"
+            assert new_pid == old_pid, "LISTEN_PID should not have been changed"
 
 
 @pytest.mark.parametrize("unset", [True, False])
 def test_listen_fds_ignores_wrong_pid(unset):
     with mock.patch.dict(os.environ):
-        os.environ['LISTEN_FDS'] = str(5)
-        os.environ['LISTEN_PID'] = str(1)
+        os.environ["LISTEN_FDS"] = str(5)
+        os.environ["LISTEN_PID"] = str(1)
         with check_environ(False):  # early exit — never changes the environment
-            assert systemd.listen_fds(unset) == 0, \
-                "should ignore listen fds not intended for this pid"
+            assert (
+                systemd.listen_fds(unset) == 0
+            ), "should ignore listen fds not intended for this pid"
 
 
 @pytest.mark.parametrize("unset", [True, False])
 def test_listen_fds_returns_count(unset):
     with mock.patch.dict(os.environ):
-        os.environ['LISTEN_FDS'] = str(5)
-        os.environ['LISTEN_PID'] = str(os.getpid())
+        os.environ["LISTEN_FDS"] = str(5)
+        os.environ["LISTEN_PID"] = str(os.getpid())
         with check_environ(unset):
-            assert systemd.listen_fds(unset) == 5, \
-                "should return the correct count of fds"
+            assert (
+                systemd.listen_fds(unset) == 5
+            ), "should return the correct count of fds"

@@ -10,5 +10,5 @@ request = {
     "headers": [
         ("CONTENT-LENGTH", "3"),
     ],
-    "body": b"xyz"
+    "body": b"xyz",
 }

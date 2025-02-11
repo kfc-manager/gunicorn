@@ -17,8 +17,7 @@ import os
 import sys
 
 # make sure the current project is in PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # set the environment settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testing.settings")
@@ -27,6 +26,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testing.settings")
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
+
 application = get_wsgi_application()
 
 # Apply WSGI middleware here.

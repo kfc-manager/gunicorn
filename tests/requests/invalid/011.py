@@ -3,4 +3,4 @@ from gunicorn.http.errors import LimitRequestHeaders
 
 request = LimitRequestHeaders
 cfg = Config()
-cfg.set('limit_request_fields', 2)
+cfg.set("limit_request_fields", 2)
